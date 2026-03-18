@@ -1,0 +1,115 @@
+export interface RegistrationCard {
+  routeName: string;
+  distance: string;
+  requirements: string[];
+  timeLimitNote?: string;
+  price: number;
+  priceLabel: string;
+}
+
+export interface EventRegistrationData {
+  slug: string;
+  eventName: string;
+  city: string;
+  registrationCards: RegistrationCard[];
+  borderColors: string[];
+  backUrl: string;
+}
+
+export const borderColors = ['#fec800', '#62b22f', '#e61c56'];
+
+export const suzdalRegistration: EventRegistrationData = {
+  slug: 'suzdal',
+  eventName: 'Tour de Russie — Суздаль',
+  city: 'Суздаль',
+  backUrl: '/events/suzdal',
+  borderColors,
+  registrationCards: [
+    {
+      routeName: 'Intro Tour',
+      distance: '25 км',
+      requirements: ['Возраст: от 18 лет', 'Медицинская справка', 'Страховка'],
+      price: 1800,
+      priceLabel: '1 800 ₽',
+    },
+    {
+      routeName: 'Median Tour',
+      distance: '60 км',
+      requirements: ['Возраст: от 18 лет', 'Медицинская справка', 'Страховка'],
+      price: 2500,
+      priceLabel: '2 500 ₽',
+    },
+    {
+      routeName: 'Grand Tour',
+      distance: '114 км',
+      requirements: ['Возраст: от 18 лет', 'Медицинская справка', 'Страховка'],
+      timeLimitNote: 'Дистанция GRAND TOUR имеет лимит времени, при достижении которого контролеры начинают направлять участников в сторону финиша с сокращением дистанции.',
+      price: 3500,
+      priceLabel: '3 500 ₽',
+    },
+  ],
+};
+
+export const igoraRegistration: EventRegistrationData = {
+  slug: 'igora',
+  eventName: 'Tour de Russie — Игора',
+  city: 'Игора',
+  backUrl: '/events/igora',
+  borderColors,
+  registrationCards: [
+    {
+      routeName: 'Intro Tour',
+      distance: '32 км',
+      requirements: ['Возраст: от 18 лет', 'Медицинская справка', 'Страховка'],
+      price: 1800,
+      priceLabel: '1 800 ₽',
+    },
+    {
+      routeName: 'Median Tour',
+      distance: '60 км',
+      requirements: ['Возраст: от 18 лет', 'Медицинская справка', 'Страховка'],
+      price: 2500,
+      priceLabel: '2 500 ₽',
+    },
+    {
+      routeName: 'Grand Tour',
+      distance: '86 км',
+      requirements: ['Возраст: от 18 лет', 'Медицинская справка', 'Страховка'],
+      timeLimitNote: 'Дистанция GRAND TOUR имеет лимит времени, при достижении которого контролеры начинают направлять участников в сторону финиша с сокращением дистанции.',
+      price: 3500,
+      priceLabel: '3 500 ₽',
+    },
+  ],
+};
+
+export const pushkinRegistration: EventRegistrationData = {
+  slug: 'pushkin',
+  eventName: 'Tour de Russie — Пушкин',
+  city: 'Пушкин',
+  backUrl: '/events/pushkin',
+  borderColors,
+  registrationCards: [
+    {
+      routeName: 'Intro Tour',
+      distance: '22 км',
+      requirements: ['Возраст: от 18 лет', 'Медицинская справка', 'Страховка'],
+      price: 1800,
+      priceLabel: '1 800 ₽',
+    },
+    {
+      routeName: 'Median Tour',
+      distance: '46 км',
+      requirements: ['Возраст: от 18 лет', 'Медицинская справка', 'Страховка'],
+      price: 2500,
+      priceLabel: '2 500 ₽',
+    },
+    {
+      routeName: 'Grand Tour',
+      distance: '95 км',
+      requirements: ['Возраст: от 18 лет', 'Медицинская справка', 'Страховка'],
+      timeLimitNote: 'Дистанция GRAND TOUR имеет лимит времени, при достижении которого контролеры начинают направлять участников в сторону финиша с сокращением дистанции.',
+      price: 3500,
+      priceLabel: '3 500 ₽',
+    },
+  ],
+};
