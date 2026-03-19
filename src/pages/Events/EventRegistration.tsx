@@ -64,10 +64,10 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <HeaderNew />
 
-      <section className="pt-[88px] py-16 md:py-20 bg-muted">
+      <section className="flex-1 pt-28 md:pt-32 pb-16 md:pb-20 bg-muted">
         <div className="max-w-[1200px] mx-auto px-6 md:px-10">
           <Link
             to={backUrl}

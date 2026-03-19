@@ -165,9 +165,44 @@ const FooterNew: React.FC = () => {
       </Dialog>
       
       <div className="tdr-footer-bottom">
-        <p className="tdr-footer-copyright">
-          © 2026 Tour de Russie. Все права защищены.
-        </p>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="tdr-footer-copyright">
+            © 2026 Tour de Russie. Все права защищены.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-white/70">
+            <a
+              href="/documents/public-offer-individual.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors">
+              Публичная оферта (физ. лица)
+            </a>
+            <span className="hidden md:inline">•</span>
+            <a
+              href="/documents/public-offer-legal.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors">
+              Публичная оферта (юр. лица)
+            </a>
+            <span className="hidden md:inline">•</span>
+            <a
+              href="/documents/terms-of-service.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors">
+              Пользовательское соглашение
+            </a>
+            <span className="hidden md:inline">•</span>
+            <a
+              href="/documents/privacy-policy.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors">
+              Политика конфиденциальности
+            </a>
+          </div>
+        </div>
       </div>
     </footer>);
 

@@ -31,7 +31,7 @@ const SwaggerUI: React.FC = () => {
 
   const initSwagger = async () => {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
       const response = await fetch(`${apiUrl}/openapi-spec`);
 
       if (!response.ok) throw new Error('Failed to load API specification');

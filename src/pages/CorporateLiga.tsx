@@ -30,10 +30,10 @@ const CorporateLiga: React.FC = () => {
     window.scrollTo(0, 0);
   }, []);
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col bg-background">
       <HeaderNew />
-      
-      <main className="tdr-page">
+
+      <main className="flex-1 tdr-page">
         <div className="tdr-container">
           <h1 className="font-extrabold text-base uppercase tracking-tight text-foreground mb-6">Корпоративная лига</h1>
           

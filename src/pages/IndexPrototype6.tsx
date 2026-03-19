@@ -63,7 +63,7 @@ const IndexPrototype6: React.FC = () => {
   }, [heroSlide]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       <HeaderNew hideLogo />
 
       {/* === TOP HERO BLOCK === */}

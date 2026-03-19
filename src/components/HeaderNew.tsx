@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faXmark, faChevronDown, faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '@/contexts/AuthContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger } from
+'@/components/ui/dropdown-menu';
 import logoHeader from '@/assets/logo-header.svg';
 
 interface HeaderNewProps {
@@ -10,6 +19,8 @@ interface HeaderNewProps {
 
 const HeaderNew: React.FC<HeaderNewProps> = ({ hideLogo = false }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, profile, signOut, loading } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAboutVisible, setIsAboutVisible] = useState(false);
@@ -49,6 +60,21 @@ const HeaderNew: React.FC<HeaderNewProps> = ({ hideLogo = false }) => {
       return () => clearTimeout(timer);
     }
   }, [isHomePage, location.hash]);
+
+  const getInitials = () => {
+    if (profile?.first_name && profile?.last_name) {
+      return `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase();
+    }
+    if (user?.email) {
+      return user.email[0].toUpperCase();
+    }
+    return 'U';
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   return (
     <header className={`tdr-header ${isScrolled ? 'shadow-lg' : ''}`}>
@@ -98,11 +124,60 @@ const HeaderNew: React.FC<HeaderNewProps> = ({ hideLogo = false }) => {
             <Link to="/chucha-world" className={`tdr-nav-link tdr-grid-bot-11 font-mono ${isActive('/chucha-world') ? 'active' : ''}`}>Мир чучи</Link>
           </div>
         </div>
-
-        {/* Empty space for layout balance */}
-        <div className="flex-1" />
+        
+        {/* Auth */}
+        <div className="flex items-center gap-3 flex-1 justify-end">
+          {!loading && (
+          user ?
+          <>
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger className="hidden md:flex items-center gap-2 cursor-pointer outline-none">
+                    <Avatar className="h-8 w-8 border-2 border-white/20">
+                      <AvatarImage src={profile?.avatar_url || undefined} />
+                      <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
+                        {getInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 bg-white z-[1001] shadow-lg border">
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard" className="flex items-center gap-2 cursor-pointer">
+                        <FontAwesomeIcon icon={faUser} className="h-4 w-4" />
+                        Личный кабинет
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                  onClick={handleSignOut}
+                  className="flex items-center gap-2 cursor-pointer text-destructive">
+                      <FontAwesomeIcon icon={faRightFromBracket} className="h-4 w-4" />
+                      Выйти
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Link to="/dashboard" className="md:hidden flex items-center">
+                  <Avatar className="h-8 w-8 border-2 border-primary/20">
+                    <AvatarImage src={profile?.avatar_url || undefined} />
+                    <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
+                      {getInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
+              </> :
+          <>
+                <Link
+              to="/auth"
+              className="hidden md:inline-flex items-center justify-center text-xs font-bold uppercase tracking-widest px-5 py-2 rounded-sm transition-all hover:scale-105 bg-primary text-primary-foreground">
+                  Вход
+                </Link>
+                <Link to="/auth" className="md:hidden flex items-center text-primary">
+                  <FontAwesomeIcon icon={faUser} className="w-[22px] h-[22px]" />
+                </Link>
+              </>)
+          }
+        </div>
       </div>
-
+      
       {/* Mobile Menu */}
       {isMobileMenuOpen &&
       <div className="md:hidden bg-primary border-t border-white/10 py-5 px-6 overflow-y-auto max-h-[calc(100vh-88px)]">
@@ -123,7 +198,7 @@ const HeaderNew: React.FC<HeaderNewProps> = ({ hideLogo = false }) => {
             <Link to="/results" className="text-white font-bold text-sm uppercase tracking-wider py-3 min-h-[44px] flex items-center" onClick={() => setIsMobileMenuOpen(false)}>Результаты</Link>
             <Link to="/corporate" className="text-white font-bold text-sm uppercase tracking-wider py-3 min-h-[44px] flex items-center" onClick={() => setIsMobileMenuOpen(false)}>Корпоративная лига</Link>
             <Link to="/chucha-world" className="text-white font-bold text-sm uppercase tracking-wider py-3 min-h-[44px] flex items-center" onClick={() => setIsMobileMenuOpen(false)}>Мир чучи</Link>
-
+            
             {/* Secondary links — same order as desktop top row */}
             <div className="border-t border-white/10 mt-3 pt-3 flex flex-col gap-1">
               <Link to="/reglament" className="text-white/80 font-medium text-sm py-3 min-h-[44px] flex items-center" onClick={() => setIsMobileMenuOpen(false)}>Регламент</Link>
@@ -131,6 +206,17 @@ const HeaderNew: React.FC<HeaderNewProps> = ({ hideLogo = false }) => {
               <Link to="/media" className="text-white/80 font-medium text-sm py-3 min-h-[44px] flex items-center" onClick={() => setIsMobileMenuOpen(false)}>Медиа</Link>
               <Link to="/contact" className="text-white/80 font-medium text-sm py-3 min-h-[44px] flex items-center" onClick={() => setIsMobileMenuOpen(false)}>Контакты</Link>
             </div>
+
+            {!user && !loading &&
+          <div className="border-t border-white/10 mt-3 pt-5 flex justify-center">
+                <Link
+              to="/auth"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="inline-flex items-center justify-center text-xs font-bold uppercase tracking-widest px-10 py-3 rounded-sm bg-white text-primary">
+                  Вход
+                </Link>
+              </div>
+          }
           </nav>
         </div>
       }

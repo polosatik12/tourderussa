@@ -20,7 +20,7 @@ const Contact: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+      const apiUrl = import.meta.env.VITE_API_URL || '/api';
       const response = await fetch(`${apiUrl}/contact`, {
         method: 'POST',
         headers: {
@@ -47,10 +47,10 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col bg-background">
       <HeaderNew />
-      
-      <main className="tdr-page">
+
+      <main className="flex-1 tdr-page">
         <div className="tdr-container text-foreground">
             
           
@@ -143,6 +143,7 @@ const Contact: React.FC = () => {
 
               <div className="space-y-1 text-[14px]">
                 <p className="text-foreground"><span className="text-foreground">ИНН:</span> 7811814589</p>
+                <p className="text-foreground"><span className="text-foreground">ОГРН:</span> 1267800017055</p>
               </div>
 
               <div className="text-[14px]">

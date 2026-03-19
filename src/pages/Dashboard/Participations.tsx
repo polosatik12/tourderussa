@@ -1,0 +1,325 @@
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import DashboardLayout from '@/components/dashboard/DashboardLayout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Calendar, Trophy, ArrowRight, MapPin, Plus } from 'lucide-react';
+import { eventsAPI, registrationsAPI } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+
+interface EventWithDistances {
+  id: string;
+  name: string;
+  date: string;
+  location: string;
+  status: string;
+  distances: { id: string; name: string; distance_km: number; price_kopecks: number }[];
+}
+
+interface Registration {
+  id: string;
+  event_id: string;
+  distance_id: string;
+  bib_number: number | null;
+  payment_status: string;
+  created_at: string;
+  events: { name: string; date: string; location: string; status: string } | null;
+  event_distances: { name: string; distance_km: number } | null;
+}
+
+const Participations: React.FC = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [events, setEvents] = useState<EventWithDistances[]>([]);
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<EventWithDistances | null>(null);
+  const [selectedDistance, setSelectedDistance] = useState<string | null>(null);
+  const [accepted, setAccepted] = useState(false);
+
+  useEffect(() => {
+    const load = async () => {
+      if (!user) return;
+
+      try {
+        const [eventsRes, regsRes] = await Promise.all([
+          eventsAPI.getEvents('upcoming'),
+          registrationsAPI.getUserRegistrations(),
+        ]);
+
+        const eventsWithDist: EventWithDistances[] = [];
+        for (const ev of eventsRes.data.events || []) {
+          const { data: distsData } = await eventsAPI.getEventDistances(ev.id);
+          eventsWithDist.push({ ...ev, distances: distsData.distances || [] });
+        }
+
+        setEvents(eventsWithDist);
+        setRegistrations(regsRes.data.registrations || []);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+      setLoading(false);
+    };
+    load();
+  }, [user]);
+
+  const upcomingRegs = registrations.filter(r => r.events?.status === 'upcoming' || r.events?.status === 'ongoing');
+  const pastRegs = registrations.filter(r => r.events?.status === 'completed');
+
+  const openRegistration = (ev: EventWithDistances) => {
+    setSelectedEvent(ev);
+    setSelectedDistance(null);
+    setAccepted(false);
+    setDialogOpen(true);
+  };
+
+  const addToCart = () => {
+    if (!selectedEvent || !selectedDistance) return;
+    const dist = selectedEvent.distances.find(d => d.id === selectedDistance);
+    if (!dist) return;
+
+    const cartItem = {
+      eventSlug: selectedEvent.id,
+      eventName: selectedEvent.name,
+      routeName: dist.name,
+      distance: `${dist.distance_km} км`,
+      price: dist.price_kopecks / 100,
+      city: selectedEvent.location,
+      requirements: [],
+    };
+
+    const stored = localStorage.getItem('tdr_cart');
+    const cart = stored ? JSON.parse(stored) : [];
+
+    const exists = cart.some((c: any) => c.eventSlug === cartItem.eventSlug && c.routeName === cartItem.routeName);
+    if (exists) {
+      toast.info('Эта дистанция уже в корзине');
+      setDialogOpen(false);
+      return;
+    }
+
+    cart.push(cartItem);
+    localStorage.setItem('tdr_cart', JSON.stringify(cart));
+    toast.success('Добавлено в корзину');
+    setDialogOpen(false);
+    navigate('/dashboard/cart');
+  };
+
+  const isRegistered = (eventId: string) => registrations.some(r => r.event_id === eventId);
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex justify-center py-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-foreground">Мои участия</h1>
+        </div>
+
+        <Tabs defaultValue="register" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 max-w-lg">
+            <TabsTrigger value="register">Регистрация</TabsTrigger>
+            <TabsTrigger value="upcoming">Предстоящие</TabsTrigger>
+            <TabsTrigger value="past">Архив</TabsTrigger>
+          </TabsList>
+
+          {/* Active registrations */}
+          <TabsContent value="upcoming" className="mt-6">
+            {upcomingRegs.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Нет активных регистраций</h3>
+                  <p className="text-muted-foreground mb-6">Зарегистрируйтесь на ближайшее мероприятие</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {upcomingRegs.map(r => (
+                  <Card key={r.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-semibold text-foreground">{r.events?.name}</h3>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            <MapPin className="inline w-3 h-3 mr-1" />
+                            {r.events?.location} · {r.events?.date ? new Date(r.events.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
+                          </p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Дистанция: {r.event_distances?.name} ({r.event_distances?.distance_km} км)
+                            {r.bib_number && <> · Номер: <span className="font-medium text-foreground">{r.bib_number}</span></>}
+                          </p>
+                        </div>
+                        <Badge variant={r.payment_status === 'paid' ? 'default' : 'outline'}>
+                          {r.payment_status === 'paid' ? 'Оплачено' : 'Ожидает оплаты'}
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Past */}
+          <TabsContent value="past" className="mt-6">
+            {pastRegs.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Trophy className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">История участий пуста</h3>
+                  <p className="text-muted-foreground">Ваши прошедшие мероприятия будут отображаться здесь</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {pastRegs.map(r => (
+                  <Card key={r.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-semibold text-foreground">{r.events?.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {r.event_distances?.name} ({r.event_distances?.distance_km} км)
+                          </p>
+                        </div>
+                        <Badge variant="secondary">Завершено</Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Register for events */}
+          <TabsContent value="register" className="mt-6">
+            {events.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Нет доступных мероприятий</h3>
+                  <p className="text-muted-foreground">Следите за обновлениями в календаре</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {events.map(ev => (
+                  <Card key={ev.id} className="overflow-hidden">
+                    <CardContent className="p-5">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-lg text-foreground">{ev.name}</h3>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            <MapPin className="inline w-3 h-3 mr-1" />
+                            {ev.location} · {new Date(ev.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                          </p>
+                          {ev.distances.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-3">
+                              {ev.distances.map(d => (
+                                <Badge key={d.id} variant="outline" className="text-xs">
+                                  {d.name} · {d.distance_km} км · {(d.price_kopecks / 100).toLocaleString('ru-RU')} ₽
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <div className="shrink-0">
+                          {isRegistered(ev.id) ? (
+                            <Badge variant="secondary">Вы зарегистрированы</Badge>
+                          ) : (
+                            <Button size="sm" onClick={() => openRegistration(ev)}>
+                              <Plus className="w-4 h-4 mr-1" />Регистрация
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* Registration dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Регистрация на мероприятие</DialogTitle>
+          </DialogHeader>
+
+          {selectedEvent && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold">{selectedEvent.name}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {selectedEvent.location} · {new Date(selectedEvent.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Выберите дистанцию:</p>
+                {selectedEvent.distances.map(d => (
+                  <button
+                    key={d.id}
+                    onClick={() => setSelectedDistance(d.id)}
+                    className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                      selectedDistance === d.id
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">{d.name} — {d.distance_km} км</span>
+                      <span className="font-semibold text-primary">{(d.price_kopecks / 100).toLocaleString('ru-RU')} ₽</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-2">
+                <Checkbox
+                  id="accept-rules"
+                  checked={accepted}
+                  onCheckedChange={(v) => setAccepted(v === true)}
+                />
+                <label htmlFor="accept-rules" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                  Я ознакомился с правилами мероприятия и принимаю условия участия
+                </label>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>Отмена</Button>
+            <Button
+              onClick={addToCart}
+              disabled={!selectedDistance || !accepted}
+            >
+              Добавить в корзину
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </DashboardLayout>
+  );
+};
+
+export default Participations;

@@ -1,0 +1,70 @@
+TOUR DE RUSSIE - CLEAN DEPLOYMENT PACKAGE
+==========================================
+
+Дата создания: 19 марта 2026
+Размер: 233 MB
+
+СОДЕРЖИМОЕ:
+-----------
+
+1. ГОТОВЫЕ ФАЙЛЫ ДЛЯ СЕРВЕРА (dist):
+   - assets/ - скомпилированные JS и CSS
+   - documents/ - все PDF документы (11 файлов)
+   - fonts/ - шрифты
+   - images/ - изображения
+   - index.html - главная страница
+   - robots.txt
+
+2. ИСХОДНЫЙ КОД (для разработки):
+   - src/ - все компоненты и страницы (108 .tsx файлов)
+   - public/ - исходные ассеты и документы
+   
+3. КОНФИГУРАЦИЯ:
+   - package.json - зависимости проекта
+   - vite.config.ts - настройки Vite (включая proxy для API)
+   - tailwind.config.ts - настройки Tailwind CSS
+   - tsconfig.json - настройки TypeScript
+   - .env.local - переменные окружения
+
+ОБНОВЛЕННЫЕ ДОКУМЕНТЫ:
+----------------------
+✓ consent-advertising.pdf (91K)
+✓ consent-personal-data.pdf (136K)
+✓ cookie-policy.pdf (120K)
+✓ disclaimer-waiver.pdf (140K)
+✓ photo-consent.pdf (87K)
+✓ privacy-policy.pdf (197K)
+✓ public-offer-individual.pdf (217K) - для физ. лиц
+✓ public-offer-legal.pdf (238K) - для юр. лиц
+✓ refund-policy.pdf (220K)
+✓ reglament-2026.pdf (315K) - ОБНОВЛЕН
+✓ terms-of-service.pdf (173K)
+
+ОСНОВНЫЕ ИЗМЕНЕНИЯ В КОДЕ:
+---------------------------
+✓ Исправлена структура футера (белое пространство)
+✓ Добавлены ссылки на документы в футер
+✓ Обновлена страница контактов (добавлен ОГРН)
+✓ Исправлены отступы на странице регистрации
+✓ Настроен Vite proxy для API (https://tourderussie.ru/api)
+✓ Исправлены все страницы событий (Suzdal, Igora, Pushkin)
+✓ Обновлены компоненты аутентификации
+✓ Исправлена страница результатов
+
+ДЕПЛОЙ НА СЕРВЕР:
+------------------
+Вариант 1 (только готовые файлы):
+  Скопируй содержимое корневой папки (assets/, documents/, fonts/, 
+  images/, index.html, robots.txt) на веб-сервер
+
+Вариант 2 (полный проект):
+  1. Скопируй всю папку на сервер
+  2. Запусти: npm install
+  3. Для разработки: npm run dev
+  4. Для продакшена: npm run build
+
+ВАЖНО:
+------
+- Не копируй node_modules (установится через npm install)
+- Проверь .env.local перед деплоем
+- API настроен на https://tourderussie.ru/api
