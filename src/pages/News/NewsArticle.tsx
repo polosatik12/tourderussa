@@ -32,7 +32,12 @@ const NewsArticle: React.FC = () => {
             Назад к новостям
           </Link>
 
-          <OptimizedImage src={article.image} isBackground backgroundSize={article.id === 3 ? '120%' : 'cover'} className="w-full h-[300px] md:h-[400px] rounded-lg mb-8" />
+          <OptimizedImage
+            src={article.image}
+            isBackground
+            backgroundSize={article.id === 3 ? '120%' : 'cover'}
+            className="w-full h-[180px] xs:h-[220px] sm:h-[300px] md:h-[400px] rounded-lg mb-8"
+          />
 
           <span className="text-sm font-medium text-foreground">{article.date}</span>
           <h1 className="md:text-3xl text-foreground mt-2 mb-6 font-mono font-bold text-xl">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import HeaderNew from '../../components/HeaderNew';
 import FooterNew from '../../components/FooterNew';
 import {
@@ -43,6 +43,8 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState<RegistrationCard | null>(null);
   const [agreed, setAgreed] = useState(false);
+  const [vipExpanded, setVipExpanded] = useState(false);
+  const [vipSelected, setVipSelected] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -67,7 +69,7 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
     <div className="min-h-screen bg-background flex flex-col">
       <HeaderNew />
 
-      <section className="flex-1 pt-28 md:pt-32 pb-16 md:pb-20 bg-muted">
+      <section className="flex-1 pt-36 md:pt-40 pb-16 md:pb-20 bg-muted">
         <div className="max-w-[1200px] mx-auto px-6 md:px-10">
           <Link
             to={backUrl}
@@ -123,7 +125,7 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
 
       {/* Confirmation Dialog */}
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-extrabold text-xl uppercase text-primary tracking-wide">
               Подтверждение выбора
@@ -154,14 +156,74 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
                 </ul>
               </div>
 
+              {/* Insurance Button */}
+              <div className="border-t border-border pt-4">
+                <a
+                  href="https://www.sogaz.ru/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-center py-3 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold uppercase tracking-wider rounded-sm transition-colors"
+                >
+                  Купить страховку
+                </a>
+              </div>
+
+              {/* VIP Section */}
+              <div className="border border-border rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setVipExpanded(!vipExpanded)}
+                  className="w-full flex items-center justify-between p-4 bg-muted/30 hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <Checkbox
+                      checked={vipSelected}
+                      onCheckedChange={(checked) => setVipSelected(checked === true)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <span className="font-bold text-foreground">Выбрать VIP Пакет</span>
+                  </div>
+                  <FontAwesomeIcon
+                    icon={vipExpanded ? faChevronUp : faChevronDown}
+                    className="text-muted-foreground"
+                  />
+                </button>
+
+                {vipExpanded && (
+                  <div className="p-4 bg-background space-y-3">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-medium text-foreground">VIP Пакет включает:</p>
+                      <span className="font-bold text-lg text-primary">5 000 ₽</span>
+                    </div>
+                    <ul className="space-y-2 text-sm text-foreground">
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">✓</span>
+                        <span>Завтрак в VIP шатре</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">✓</span>
+                        <span>VIP парковка</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">✓</span>
+                        <span>Регистрация в VIP стойке</span>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+
               <div className="flex items-center justify-between border-t border-border pt-4">
                 <span className="text-sm text-muted-foreground">Стоимость</span>
                 <span className="font-extrabold text-2xl text-primary">
-                  {selectedCard.priceLabel}
+                  {(() => {
+                    const basePrice = parseInt(selectedCard.priceLabel.replace(/[^\d]/g, ''));
+                    const totalPrice = basePrice + (vipSelected ? 7000 : 0);
+                    return `${totalPrice.toLocaleString('ru-RU')} ₽`;
+                  })()}
                 </span>
               </div>
 
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3 border-t border-border pt-4">
                 <Checkbox
                   id={`agree-${slug}`}
                   checked={agreed}

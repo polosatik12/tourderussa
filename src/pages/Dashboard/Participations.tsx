@@ -12,6 +12,21 @@ import { eventsAPI, registrationsAPI } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
+// Map backend distance names to display names
+function getDisplayDistanceName(backendName: string): string {
+  const mapping: Record<string, string> = {
+    'Велогонка 114 км': 'Grand Tour',
+    'Велогонка 60 км': 'Median Tour',
+    'Велогонка 25 км': 'Intro Tour',
+  };
+  return mapping[backendName] || backendName;
+}
+
+// Format distance to remove decimals
+function formatDistance(distance: number | string): string {
+  return Math.round(Number(distance)).toString();
+}
+
 interface EventWithDistances {
   id: string;
   name: string;
@@ -88,9 +103,9 @@ const Participations: React.FC = () => {
     const cartItem = {
       eventSlug: selectedEvent.id,
       eventName: selectedEvent.name,
-      routeName: dist.name,
-      distance: `${dist.distance_km} км`,
-      price: dist.price_kopecks / 100,
+      routeName: getDisplayDistanceName(dist.name),
+      distance: `${formatDistance(dist.distance_km)} км`,
+      price: 6000,
       city: selectedEvent.location,
       requirements: [],
     };
@@ -161,7 +176,7 @@ const Participations: React.FC = () => {
                             {r.events?.location} · {r.events?.date ? new Date(r.events.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
                           </p>
                           <p className="text-sm text-muted-foreground mt-1">
-                            Дистанция: {r.event_distances?.name} ({r.event_distances?.distance_km} км)
+                            Дистанция: {getDisplayDistanceName(r.event_distances?.name || '')} ({formatDistance(r.event_distances?.distance_km || 0)} км)
                             {r.bib_number && <> · Номер: <span className="font-medium text-foreground">{r.bib_number}</span></>}
                           </p>
                         </div>
@@ -195,7 +210,7 @@ const Participations: React.FC = () => {
                         <div>
                           <h3 className="font-semibold text-foreground">{r.events?.name}</h3>
                           <p className="text-sm text-muted-foreground">
-                            {r.event_distances?.name} ({r.event_distances?.distance_km} км)
+                            {getDisplayDistanceName(r.event_distances?.name || '')} ({formatDistance(r.event_distances?.distance_km || 0)} км)
                           </p>
                         </div>
                         <Badge variant="secondary">Завершено</Badge>
@@ -233,7 +248,7 @@ const Participations: React.FC = () => {
                             <div className="flex flex-wrap gap-2 mt-3">
                               {ev.distances.map(d => (
                                 <Badge key={d.id} variant="outline" className="text-xs">
-                                  {d.name} · {d.distance_km} км · {(d.price_kopecks / 100).toLocaleString('ru-RU')} ₽
+                                  {getDisplayDistanceName(d.name)} · {formatDistance(d.distance_km)} км · 6 000 ₽
                                 </Badge>
                               ))}
                             </div>
@@ -287,8 +302,8 @@ const Participations: React.FC = () => {
                     }`}
                   >
                     <div className="flex justify-between items-center">
-                      <span className="font-medium">{d.name} — {d.distance_km} км</span>
-                      <span className="font-semibold text-primary">{(d.price_kopecks / 100).toLocaleString('ru-RU')} ₽</span>
+                      <span className="font-medium">{getDisplayDistanceName(d.name)} — {formatDistance(d.distance_km)} км</span>
+                      <span className="font-semibold text-primary">6 000 ₽</span>
                     </div>
                   </button>
                 ))}

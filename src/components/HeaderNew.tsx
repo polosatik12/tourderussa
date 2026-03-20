@@ -98,12 +98,12 @@ const HeaderNew: React.FC<HeaderNewProps> = ({ hideLogo = false }) => {
         {/* Center zone: Navigation */}
         <div className="hidden md:flex items-center justify-center">
           <div className="tdr-header-grid">
-            <Link to="/reglament" className={`tdr-nav-link tdr-nav-link--secondary tdr-grid-top-2 ${isActive('/reglament') ? 'active' : ''}`}>Регламент</Link>
-            <Link to="/partners" className={`tdr-nav-link tdr-nav-link--secondary tdr-grid-top-4 ${isActive('/partners') ? 'active' : ''}`}>Партнеры</Link>
-            <Link to="/media" className={`tdr-nav-link tdr-nav-link--secondary tdr-grid-top-6 flex items-center gap-1 ${isActive('/media') ? 'active' : ''}`}>
+            <Link to="/reglament" className={`tdr-nav-link tdr-grid-top-2 ${isActive('/reglament') ? 'active' : ''}`}>Регламент</Link>
+            <Link to="/partners" className={`tdr-nav-link tdr-grid-top-4 ${isActive('/partners') ? 'active' : ''}`}>Партнеры</Link>
+            <Link to="/media" className={`tdr-nav-link tdr-grid-top-6 flex items-center gap-1 ${isActive('/media') ? 'active' : ''}`}>
               Медиа
             </Link>
-            <Link to="/contact" className={`tdr-nav-link tdr-nav-link--secondary tdr-grid-top-8 ${isActive('/contact') ? 'active' : ''}`}>Контакты</Link>
+            <Link to="/contact" className={`tdr-nav-link tdr-grid-top-8 ${isActive('/contact') ? 'active' : ''}`}>Контакты</Link>
 
             {isHomePage ?
             <a

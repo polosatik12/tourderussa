@@ -36,7 +36,7 @@ const Auth: React.FC = () => {
       <main className="flex-1 flex justify-center pt-20 pb-12 px-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
+            <div className="hidden md:flex justify-center mb-4">
               <img src={logoHeader} alt="Tour de Russie" className="h-10" />
             </div>
             <CardTitle className="text-2xl font-bold">

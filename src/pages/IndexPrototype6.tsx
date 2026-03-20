@@ -91,12 +91,12 @@ const IndexPrototype6: React.FC = () => {
               initial={{ opacity: 0, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="flex flex-col gap-0 sm:gap-2 lg:gap-4 max-w-[55%] sm:max-w-[50%] lg:max-w-lg"
+              className="flex flex-col gap-0 sm:gap-2 lg:gap-4 max-w-[75%] sm:max-w-[50%] lg:max-w-lg"
               style={{ transform: 'skewX(-1deg)' }}>
               <img src={heroLogo} alt="Tour de Russie" className="hidden sm:block h-[52px] lg:h-[72px] max-w-[280px] lg:max-w-[380px] md:max-w-[440px] object-contain sm:mb-1 lg:mb-4 border-2 border-white rounded-lg p-1 lg:p-2 bg-white" loading="eager" decoding="async" />
               <h1 className="font-extrabold italic leading-none">
-                <img src={glavaZag} alt="Новая глава" className="h-auto w-[95%] sm:h-[100px] sm:w-auto md:h-[100px] lg:h-[120px] xl:h-[150px] block -ml-6 sm:-ml-5 md:-ml-7 lg:-ml-10 object-left mb-[-32px] sm:mb-0" />
-                <span className="text-white text-[22px] sm:text-xl md:text-xl lg:text-3xl block mt-3 sm:-mt-5 md:-mt-6 lg:-mt-14 leading-[1.02] sm:leading-none whitespace-pre-line">{'российского велоспорта\nдля любителей'}</span>
+                <img src={glavaZag} alt="Новая глава" className="h-auto w-[78%] sm:h-[100px] sm:w-auto md:h-[100px] lg:h-[120px] xl:h-[150px] block -ml-3 sm:-ml-5 md:-ml-7 lg:-ml-10 object-left mb-[-18px] sm:mb-0" />
+                <span className="text-white text-[13px] sm:text-xl md:text-xl lg:text-3xl block mt-1 sm:-mt-5 md:-mt-6 lg:-mt-14 leading-[1.15] sm:leading-none whitespace-pre-line">{'российского велоспорта\nдля любителей'}</span>
               </h1>
             </motion.div>
           </div>
@@ -112,8 +112,8 @@ const IndexPrototype6: React.FC = () => {
 
           {/* Chucha on the left */}
           <div className="absolute inset-0 z-10" style={{ width: '38%' }}>
-            <div className="absolute top-[2%] left-[3%] lg:top-[1%] lg:left-[8%] select-none pointer-events-none">
-              <span className="text-[#003051] leading-tight whitespace-nowrap block" style={{ fontFamily: "'Marck Script', cursive", fontSize: 'clamp(0.85rem, 2.8vw, 3rem)' }}>
+            <div className="absolute top-[2%] left-[1%] lg:top-[1%] lg:left-[8%] select-none pointer-events-none">
+              <span className="text-[#003051] leading-tight whitespace-nowrap block" style={{ fontFamily: "'Marck Script', cursive", fontSize: 'clamp(0.65rem, 2.8vw, 3rem)' }}>
                 Основатель Tour de Russie
               </span>
               <div className="flex items-end gap-0 lg:ml-[15%]" style={{ marginTop: '-2%' }}>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import ProfileCompletion from '@/components/dashboard/ProfileCompletion';
@@ -7,9 +8,49 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarDays, faTrophy, faFileLines, faHeart, faArrowRight, faUser } from '@fortawesome/free-solid-svg-icons';
+import { registrationsAPI, healthCertificatesAPI, profileAPI } from '@/lib/api';
 
 const Dashboard: React.FC = () => {
   const { profile, user } = useAuth();
+
+  // Fetch user registrations
+  const { data: registrations, isLoading: loadingRegistrations } = useQuery({
+    queryKey: ['user-registrations'],
+    queryFn: async () => {
+      const { data } = await registrationsAPI.getUserRegistrations();
+      console.log('Fetched registrations:', data);
+      return data.registrations || [];
+    },
+    enabled: !!user,
+    refetchInterval: 30000, // Refetch every 30 seconds
+    staleTime: 10000, // Consider data stale after 10 seconds
+  });
+
+  // Fetch health certificates
+  const { data: healthCerts, isLoading: loadingHealthCerts } = useQuery({
+    queryKey: ['user-health-certificates'],
+    queryFn: async () => {
+      const { data } = await healthCertificatesAPI.getUserCertificates();
+      console.log('Fetched health certificates:', data);
+      return data.certificates || [];
+    },
+    enabled: !!user,
+    refetchInterval: 30000,
+    staleTime: 10000,
+  });
+
+  // Fetch consents status from profile
+  const { data: profileData, isLoading: loadingProfile } = useQuery({
+    queryKey: ['user-profile-consents'],
+    queryFn: async () => {
+      const { data } = await profileAPI.getProfile();
+      console.log('Fetched profile data:', data);
+      return data;
+    },
+    enabled: !!user,
+    refetchInterval: 30000,
+    staleTime: 10000,
+  });
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -23,6 +64,33 @@ const Dashboard: React.FC = () => {
     if (user?.email) return user.email.split('@')[0];
     return 'участник';
   };
+
+  // Calculate stats
+  const upcomingEvent = registrations?.find((reg: any) => {
+    const eventDate = new Date(reg.event?.date);
+    return eventDate > new Date();
+  });
+
+  const totalParticipations = registrations?.length || 0;
+
+  const hasValidHealthCert = healthCerts?.some((cert: any) => {
+    if (cert.status !== 'approved') return false;
+    const expiryDate = new Date(cert.expiry_date);
+    return expiryDate > new Date();
+  });
+
+  // Extract consents from profile data
+  const consents = profileData?.consents || {};
+  const allConsentsGiven = consents?.consent_personal_data &&
+                           consents?.consent_advertising &&
+                           consents?.photo_consent &&
+                           consents?.disclaimer_waiver;
+
+  const healthCertStatus = hasValidHealthCert ? 'Загружена' : 'Не загружена';
+  const documentsStatus = allConsentsGiven ? 'Подписаны' : 'Требуется подпись';
+
+  // Show loading state
+  const isLoading = loadingRegistrations || loadingHealthCerts || loadingProfile;
 
   return (
     <DashboardLayout>
@@ -47,7 +115,9 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Ближайшее событие</p>
-                  <p className="font-semibold text-foreground">Нет регистраций</p>
+                  <p className="font-semibold text-foreground">
+                    {upcomingEvent ? upcomingEvent.event?.name : 'Нет регистраций'}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -61,7 +131,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Всего участий</p>
-                  <p className="font-semibold text-foreground">0</p>
+                  <p className="font-semibold text-foreground">{totalParticipations}</p>
                 </div>
               </div>
             </CardContent>
@@ -75,7 +145,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Справка о здоровье</p>
-                  <p className="font-semibold text-foreground">Не загружена</p>
+                  <p className="font-semibold text-foreground">{healthCertStatus}</p>
                 </div>
               </div>
             </CardContent>
@@ -89,7 +159,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Документы</p>
-                  <p className="font-semibold text-foreground">Требуется подпись</p>
+                  <p className="font-semibold text-foreground">{documentsStatus}</p>
                 </div>
               </div>
             </CardContent>

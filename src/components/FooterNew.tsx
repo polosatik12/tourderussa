@@ -43,7 +43,7 @@ const FooterNew: React.FC = () => {
           <img
             src="/images/tdr-logo.png"
             alt="Tour de Russie"
-            className="hidden sm:block h-[56px] w-auto mb-6"
+            className="hidden sm:block h-[37px] w-auto mb-6"
             loading="eager"
             decoding="async" />
           

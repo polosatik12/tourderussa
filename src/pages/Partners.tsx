@@ -12,24 +12,30 @@ import rzhd from '../assets/partners/rzhd.png';
 import sogazMedicina from '../assets/partners/sogaz-medicina.png';
 import sogaz from '../assets/partners/sogaz.png';
 
-const partners = [
-{ src: gazpromMezhregiongaz, alt: 'Газпром Межрегионгаз' },
-{ src: gazpromNeft, alt: 'Газпром Нефть' },
-{ src: bankRossiya, alt: 'Банк Россия' },
-{ src: rostelecom, alt: 'Ростелеком' },
-{ src: rzhd, alt: 'РЖД' },
-{ src: interRao, alt: 'Интер РАО' },
-{ src: sogaz, alt: 'СОГАЗ' },
-{ src: sogazMedicina, alt: 'СОГАЗ Медицина' },
-{ src: delovayaRossiya, alt: 'Деловая Россия' },
-{ src: '/images/partners/moscow-coat-of-arms.png', alt: 'Правительство Москвы' },
-{ src: '/images/partners/leningrad-oblast-coat-of-arms.png', alt: 'Правительство Ленинградской области' },
-{ src: '/images/partners/vladimir-oblast-coat-of-arms.png', alt: 'Правительство Владимирской области' },
-{ src: '/images/partners/saint-petersburg-coat-of-arms.png', alt: 'Правительство Санкт-Петербурга' },
-{ src: '/images/partners/academy-of-life.png', alt: 'Академия Жизни' },
-{ src: '/images/partners/teremok.png', alt: 'Теремок' },
-{ src: '/images/partners/rm-travel.png', alt: 'R&M Travel' }];
+// Company partners (13 logos)
+const companyPartners = [
+  { src: gazpromMezhregiongaz, alt: 'Газпром Межрегионгаз' },
+  { src: gazpromNeft, alt: 'Газпром Нефть' },
+  { src: bankRossiya, alt: 'Банк Россия' },
+  { src: rostelecom, alt: 'Ростелеком' },
+  { src: rzhd, alt: 'РЖД' },
+  { src: interRao, alt: 'Интер РАО' },
+  { src: sogaz, alt: 'СОГАЗ' },
+  { src: sogazMedicina, alt: 'СОГАЗ Медицина' },
+  { src: delovayaRossiya, alt: 'Деловая Россия' },
+  { src: '/images/partners/academy-of-life.png', alt: 'Академия Жизни' },
+  { src: '/images/partners/teremok.png', alt: 'Теремок' },
+  { src: '/images/partners/rm-travel.png', alt: 'R&M Travel' },
+  { src: '/images/partners/spbgu.png', alt: 'Санкт-Петербургский государственный университет' }
+];
 
+// Government supporters (4 logos with coats of arms)
+const governmentSupporters = [
+  { src: '/images/partners/moscow-coat-of-arms.png', alt: 'Правительство Москвы' },
+  { src: '/images/partners/leningrad-oblast-coat-of-arms.png', alt: 'Правительство Ленинградской области' },
+  { src: '/images/partners/vladimir-oblast-coat-of-arms.png', alt: 'Правительство Владимирской области' },
+  { src: '/images/partners/saint-petersburg-coat-of-arms.png', alt: 'Правительство Санкт-Петербурга' }
+];
 
 const Partners: React.FC = () => {
   useEffect(() => {
@@ -42,33 +48,47 @@ const Partners: React.FC = () => {
 
       <main className="flex-1 tdr-page">
         <div className="tdr-container">
-          <h1 className="font-extrabold text-base uppercase tracking-tight text-foreground mb-8">Партнеры</h1>
-          
-          
+          <h1 className="font-extrabold text-base uppercase tracking-tight text-foreground mb-12">Партнеры</h1>
 
-
-
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 mb-16">
-            {partners.map((partner, index) =>
-            <div key={index} className="flex items-center justify-center">
+          {/* Company Partners - 13 logos in 5 columns on desktop */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 mb-16 place-items-center">
+            {companyPartners.map((partner, index) => (
+              <div key={index} className="flex items-center justify-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow w-full">
                 <img
-                src={partner.src}
-                alt={partner.alt}
-                loading="lazy"
-                decoding="async"
-                className="max-h-20 object-contain" />
-
+                  src={partner.src}
+                  alt={partner.alt}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-20 object-contain"
+                />
               </div>
-            )}
+            ))}
+          </div>
+
+          {/* Government Supporters Section - 4 logos with coats of arms */}
+          <h2 className="font-bold text-lg uppercase tracking-tight text-foreground mb-8 text-center">При поддержке</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-16 max-w-5xl mx-auto">
+            {governmentSupporters.map((supporter, index) => (
+              <div key={index} className="flex flex-col items-center justify-start text-center">
+                <div className="w-32 h-32 flex items-center justify-center mb-4">
+                  <img
+                    src={supporter.src}
+                    alt={supporter.alt}
+                    loading="lazy"
+                    decoding="async"
+                    className="max-w-full max-h-full object-contain"
+                  />
+                </div>
+                <p className="font-bold text-lg uppercase tracking-tight text-foreground leading-tight px-2">{supporter.alt}</p>
+              </div>
+            ))}
           </div>
         </div>
-        
       </main>
-      
-      <FooterNew />
-    </div>);
 
+      <FooterNew />
+    </div>
+  );
 };
 
 export default Partners;

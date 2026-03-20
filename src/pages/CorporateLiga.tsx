@@ -14,15 +14,20 @@ import sogazMedicina from '../assets/partners/sogaz-medicina.png';
 import sogaz from '../assets/partners/sogaz.png';
 
 const corporateTeams = [
-{ src: gazpromMezhregiongaz, alt: 'Газпром Межрегионгаз' },
-{ src: gazpromNeft, alt: 'Газпром Нефть' },
-{ src: bankRossiya, alt: 'Банк Россия' },
-{ src: rostelecom, alt: 'Ростелеком' },
-{ src: rzhd, alt: 'РЖД' },
-{ src: interRao, alt: 'Интер РАО' },
-{ src: sogaz, alt: 'СОГАЗ' },
-{ src: sogazMedicina, alt: 'СОГАЗ Медицина' },
-{ src: delovayaRossiya, alt: 'Деловая Россия' }];
+  { src: gazpromMezhregiongaz, alt: 'Газпром Межрегионгаз' },
+  { src: gazpromNeft, alt: 'Газпром Нефть' },
+  { src: bankRossiya, alt: 'Банк Россия' },
+  { src: rostelecom, alt: 'Ростелеком' },
+  { src: rzhd, alt: 'РЖД' },
+  { src: interRao, alt: 'Интер РАО' },
+  { src: sogaz, alt: 'СОГАЗ' },
+  { src: sogazMedicina, alt: 'СОГАЗ Медицина' },
+  { src: delovayaRossiya, alt: 'Деловая Россия' },
+  { src: '/images/partners/academy-of-life.png', alt: 'Академия Жизни' },
+  { src: '/images/partners/teremok.png', alt: 'Теремок' },
+  { src: '/images/partners/rm-travel.png', alt: 'R&M Travel' },
+  { src: '/images/partners/spbgu.png', alt: 'Санкт-Петербургский государственный университет' }
+];
 
 
 const CorporateLiga: React.FC = () => {
@@ -65,18 +70,18 @@ const CorporateLiga: React.FC = () => {
 
           <h2 className="tdr-page-subtitle mt-12" style={{ color: '#000' }}> Наши корпоративные команды</h2>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 mb-16">
-            {corporateTeams.map((team, index) =>
-            <div key={index} className="flex items-center justify-center">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 mb-16">
+            {corporateTeams.map((team, index) => (
+              <div key={index} className="flex items-center justify-center p-4">
                 <img
-                src={team.src}
-                alt={team.alt}
-                loading="lazy"
-                decoding="async"
-                className="max-h-20 object-contain" />
-              
+                  src={team.src}
+                  alt={team.alt}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-20 object-contain"
+                />
               </div>
-            )}
+            ))}
           </div>
 
         </div>
