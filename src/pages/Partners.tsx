@@ -51,9 +51,9 @@ const Partners: React.FC = () => {
           <h1 className="font-extrabold text-base uppercase tracking-tight text-foreground mb-12">Партнеры</h1>
 
           {/* Company Partners - 13 logos in 5 columns on desktop */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 mb-16 place-items-center">
+          <div className="flex flex-wrap justify-center gap-6 mb-16">
             {companyPartners.map((partner, index) => (
-              <div key={index} className="flex items-center justify-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow w-full">
+              <div key={index} className="flex items-center justify-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow w-[calc(50%-12px)] sm:w-[calc(33.333%-16px)] lg:w-[calc(20%-19.2px)]">
                 <img
                   src={partner.src}
                   alt={partner.alt}
@@ -67,9 +67,9 @@ const Partners: React.FC = () => {
 
           {/* Government Supporters Section - 4 logos with coats of arms */}
           <h2 className="font-bold text-lg uppercase tracking-tight text-foreground mb-8 text-center">При поддержке</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-16 max-w-5xl mx-auto">
+          <div className="flex flex-wrap justify-center gap-8 mb-16 max-w-6xl mx-auto">
             {governmentSupporters.map((supporter, index) => (
-              <div key={index} className="flex flex-col items-center justify-start text-center">
+              <div key={index} className="flex flex-col items-center justify-start text-center w-[calc(50%-16px)] sm:w-[calc(25%-24px)]">
                 <div className="w-32 h-32 flex items-center justify-center mb-4">
                   <img
                     src={supporter.src}
@@ -79,7 +79,7 @@ const Partners: React.FC = () => {
                     className="max-w-full max-h-full object-contain"
                   />
                 </div>
-                <p className="font-bold text-lg uppercase tracking-tight text-foreground leading-tight px-2">{supporter.alt}</p>
+                <p className="font-bold text-sm uppercase tracking-tight text-foreground leading-tight px-2">{supporter.alt}</p>
               </div>
             ))}
           </div>

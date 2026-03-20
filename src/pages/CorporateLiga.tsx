@@ -70,9 +70,9 @@ const CorporateLiga: React.FC = () => {
 
           <h2 className="tdr-page-subtitle mt-12" style={{ color: '#000' }}> Наши корпоративные команды</h2>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 mb-16">
+          <div className="flex flex-wrap justify-center gap-6 mb-16">
             {corporateTeams.map((team, index) => (
-              <div key={index} className="flex items-center justify-center p-4">
+              <div key={index} className="flex items-center justify-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow w-[calc(50%-12px)] sm:w-[calc(33.333%-16px)] lg:w-[calc(20%-19.2px)]">
                 <img
                   src={team.src}
                   alt={team.alt}

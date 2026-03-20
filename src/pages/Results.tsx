@@ -41,9 +41,40 @@ function getAgeCategory(dateOfBirth: string | null, gender: string | null): stri
 
 const ITEMS_PER_PAGE = 20;
 
+// Hardcoded cities for Results page
+const CITIES = [
+  {
+    date: '7 июня 2026',
+    location: 'Суздаль',
+    image: '/images/hero-1.jpg',
+    locationMatch: 'Суздаль'
+  },
+  {
+    date: '5 июля 2026',
+    location: 'Ленинградская область\nИгора',
+    image: '/images/igora-hero.jpg',
+    locationMatch: 'Игора'
+  },
+  {
+    date: '16 августа 2026',
+    location: 'Санкт-Петербург\nЦарское Село',
+    image: '/images/pushkin-hero.jpg',
+    locationMatch: 'Царское Село'
+  },
+  {
+    date: '2027',
+    location: 'Москва',
+    image: '/images/slider-3.jpg?v=4',
+    locationMatch: 'Москва'
+  },
+];
+
 const Results: React.FC = () => {
+  const [showCitySelection, setShowCitySelection] = useState(true);
+  const [selectedCity, setSelectedCity] = useState<typeof CITIES[0] | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [selectedDistanceId, setSelectedDistanceId] = useState<string | null>(null);
+  const [selectedDistanceName, setSelectedDistanceName] = useState<'Grand Tour' | 'Median Tour' | 'Intro Tour'>('Grand Tour');
   const [selectedCategory, setSelectedCategory] = useState('А 18+');
   const [page, setPage] = useState(1);
 
@@ -126,14 +157,46 @@ const Results: React.FC = () => {
   // Reset page on filter change
   React.useEffect(() => {setPage(1);}, [selectedCategory, activeDistanceId]);
 
-  // Auto-select first event/distance
-  React.useEffect(() => {
-    if (events?.length && !selectedEventId) setSelectedEventId(events[0].id);
-  }, [events, selectedEventId]);
-
+  // Auto-select first distance when event is selected
   React.useEffect(() => {
     if (distances?.length) setSelectedDistanceId(distances[0].id);
   }, [distances]);
+
+  const handleCitySelect = (cityLocationMatch: string) => {
+    // Find the city from CITIES array
+    const city = CITIES.find(c => c.locationMatch === cityLocationMatch);
+
+    if (city) {
+      setSelectedCity(city);
+    }
+
+    // Find event that matches the selected city
+    const normalizeString = (str: string) =>
+      str.toLowerCase().replace(/\s+/g, ' ').replace(/\n/g, ' ').trim();
+
+    const normalizedMatch = normalizeString(cityLocationMatch);
+
+    const matchedEvent = events?.find(e => {
+      const normalizedLocation = normalizeString(e.location);
+      return normalizedLocation.includes(normalizedMatch) ||
+             normalizedMatch.includes(normalizedLocation);
+    });
+
+    // Always proceed to show the results view
+    setSelectedEventId(matchedEvent?.id || null);
+    setShowCitySelection(false);
+    setSelectedDistanceId(null);
+    setPage(1);
+  };
+
+  const handleBackToSelection = () => {
+    setShowCitySelection(true);
+    setSelectedCity(null);
+    setSelectedEventId(null);
+    setSelectedDistanceId(null);
+    setSelectedCategory('А 18+');
+    setPage(1);
+  };
 
   const formatTime = (interval: string | null) => {
     if (!interval) return '—';
@@ -148,182 +211,230 @@ const Results: React.FC = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <HeaderNew />
-      
-      <main className="flex-1 pt-32 md:pt-36 pb-16">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-8">
-          {/* Event selector (if multiple) */}
-          {events && events.length > 1 &&
-          <div className="flex flex-wrap gap-3 mb-6 justify-center">
-              {events.map((event) =>
-            <button
-              key={event.id}
-              onClick={() => {setSelectedEventId(event.id);setSelectedDistanceId(null);}}
-              className={`px-5 py-2 text-sm font-bold uppercase tracking-wide transition-colors ${
-              activeEventId === event.id ?
-              'bg-primary text-primary-foreground' :
-              'bg-muted text-muted-foreground hover:bg-muted/80'}`
-              }>
-              
-                  {event.name}
-                </button>
-            )}
-            </div>
-          }
 
-          {/* Distance tabs */}
-          {distances && distances.length > 0 ? (
-          <div className="flex flex-wrap gap-2 justify-center mb-6">
-              {distances.map((dist) => {
-                const displayName = getDisplayDistanceName(dist.name);
-                console.log('Rendering distance button:', dist.name, '→', displayName);
-                return (
-            <button
-              key={dist.id}
-              onClick={() => setSelectedDistanceId(dist.id)}
-              className={`px-5 py-2.5 text-sm font-bold uppercase tracking-wide transition-colors ${
-              activeDistanceId === dist.id ?
-              'bg-[#E31E24] text-white' :
-              'bg-transparent text-foreground hover:text-[#E31E24] border-b-2 border-transparent hover:border-[#E31E24]'}`
-              }>
-                  {displayName}
+      <main className="flex-1 pt-24 md:pt-28 pb-16">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-10 py-4 md:py-6">
+          {/* Page Title */}
+          <h1 className="font-extrabold text-base uppercase tracking-tight text-foreground mb-6 md:mb-8">
+            Результаты
+          </h1>
+
+          {/* City Selection View */}
+          {showCitySelection && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+              {CITIES.map((city, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleCitySelect(city.locationMatch)}
+                  className="bg-card overflow-hidden shadow-md hover:shadow-xl hover:scale-[1.03] transition-all duration-300 group flex flex-col h-full text-left"
+                >
+                  {/* City Photo */}
+                  <div className="h-48 overflow-hidden">
+                    <img
+                      src={city.image}
+                      alt={city.location}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+
+                  {/* City Info */}
+                  <div className="p-5 md:p-6 flex flex-col flex-1">
+                    <p className="font-bold text-lg md:text-xl text-foreground group-hover:text-secondary transition-colors duration-200 mb-3 whitespace-pre-line min-h-[72px]">
+                      {city.location}
+                    </p>
+                    <span className="inline-block font-semibold text-sm text-white bg-[#003051] px-3 py-1.5 rounded mt-auto self-start">
+                      {city.date}
+                    </span>
+                  </div>
                 </button>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-4 text-muted-foreground">
-              Загрузка дистанций...
+              ))}
             </div>
           )}
 
-          {/* Title */}
-          {activeDistance && activeEvent &&
-          <h1 className="text-center text-xl md:text-2xl lg:text-3xl text-[#003051] mb-8 tracking-tight">
-              <span className="font-extrabold uppercase">{getDisplayDistanceName(activeDistance.name)}</span>
-              <span className="font-normal">, {activeEvent.location},{' '}
-              {new Date(activeEvent.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })} г.</span>
-            </h1>
-          }
-
-          {/* Category tabs */}
-          <div className="flex flex-wrap gap-2 justify-center mb-4">
-            {CATEGORIES.map((cat) =>
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 text-sm font-semibold transition-colors ${
-              selectedCategory === cat ?
-              'bg-[#003051] text-white' :
-              'bg-transparent text-[#003051] hover:bg-[#003051]/10'}`
-              }>
-              
-                {cat}
+          {/* Results View */}
+          {!showCitySelection && (
+            <>
+              {/* Back Button */}
+              <button
+                onClick={handleBackToSelection}
+                className="mb-6 text-primary hover:text-primary/80 font-semibold text-sm flex items-center gap-2 transition-colors"
+              >
+                ← Вернуться к выбору города
               </button>
-            )}
-          </div>
 
-          {/* Sub-header */}
-          <div className="bg-[#003051]/5 py-3 px-4 text-center mb-6">
-            <p className="font-bold text-sm md:text-base text-[#003051] tracking-wide uppercase">
-              {isCompleted ? 'Результаты' : 'Список участников'}
-            </p>
-          </div>
-
-          {/* Pagination top */}
-          {totalPages > 1 &&
-          <div className="flex items-center gap-2 mb-4 text-sm">
-              <span className="text-muted-foreground">Страницы:</span>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) =>
-            <button
-              key={p}
-              onClick={() => setPage(p)}
-              className={`px-2 py-1 ${page === p ? 'font-bold text-foreground' : 'text-primary hover:underline'}`}>
-              
-                  {p}
+              {/* Distance tabs */}
+              <div className="flex flex-wrap gap-2 justify-center mb-6">
+                <button
+                  onClick={() => setSelectedDistanceName('Grand Tour')}
+                  className={`px-5 py-2.5 text-sm font-bold uppercase tracking-wide transition-colors ${
+                    selectedDistanceName === 'Grand Tour'
+                      ? 'bg-[#E31E24] text-white'
+                      : 'bg-transparent text-foreground hover:text-[#E31E24] border-b-2 border-transparent hover:border-[#E31E24]'
+                  }`}
+                >
+                  Grand Tour
                 </button>
-            )}
-            </div>
-          }
-
-          {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b-2 border-[#003051]/20">
-                  <th className="text-left py-3 px-4 font-bold w-20 text-foreground">Место</th>
-                  <th className="text-left py-3 px-4 font-bold w-24 text-foreground">Номер</th>
-                  <th className="text-left py-3 px-4 font-bold text-foreground">Участник</th>
-                  {isCompleted &&
-                  <th className="text-left py-3 px-4 font-bold text-[#003051] w-32">Время</th>
-                  }
-                  <th className="text-left py-3 px-4 font-bold w-48 text-foreground">Команда/регион</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading ?
-                <tr>
-                    <td colSpan={isCompleted ? 5 : 4} className="text-center py-16 text-muted-foreground">
-                      Загрузка...
-                    </td>
-                  </tr> :
-                currentItems.length === 0 ? null :
-                isCompleted ?
-                paginatedItems.map((result: any, idx: number) => {
-                  const profile = result.registration?.profile;
-                  return (
-                    <tr key={result.id} className={idx % 2 === 0 ? 'bg-transparent' : 'bg-muted/30'}>
-                        <td className="py-2.5 px-4">{selectedCategory === 'А 18+' ? result.place : result.category_place}</td>
-                        <td className="py-2.5 px-4">{result.registration?.bib_number ?? '—'}</td>
-                        <td className="py-2.5 px-4">{getFullName(profile)}</td>
-                        <td className="py-2.5 px-4">{formatTime(result.finish_time)}</td>
-                        <td className="py-2.5 px-4">{profile?.team_name || profile?.region || ''}</td>
-                      </tr>);
-
-                }) :
-
-                paginatedItems.map((reg: any, idx: number) => {
-                  const profile = reg.profile;
-                  const rowNumber = (page - 1) * ITEMS_PER_PAGE + idx + 1;
-                  return (
-                    <tr key={reg.id} className={idx % 2 === 0 ? 'bg-transparent' : 'bg-muted/30'}>
-                        <td className="py-2.5 px-4">{rowNumber}</td>
-                        <td className="py-2.5 px-4">{reg.bib_number ?? '—'}</td>
-                        <td className="py-2.5 px-4">{getFullName(profile)}</td>
-                        <td className="py-2.5 px-4">{profile?.team_name || profile?.region || ''}</td>
-                      </tr>);
-
-                })
-                }
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination bottom */}
-          {totalPages > 1 &&
-          <div className="flex items-center gap-2 mt-6 text-sm justify-center">
-              {page > 1 &&
-            <button onClick={() => setPage(page - 1)} className="text-primary hover:underline">← Пред.</button>
-            }
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) =>
-            <button
-              key={p}
-              onClick={() => setPage(p)}
-              className={`px-2 py-1 ${page === p ? 'font-bold text-foreground' : 'text-primary hover:underline'}`}>
-              
-                  {p}
+                <button
+                  onClick={() => setSelectedDistanceName('Median Tour')}
+                  className={`px-5 py-2.5 text-sm font-bold uppercase tracking-wide transition-colors ${
+                    selectedDistanceName === 'Median Tour'
+                      ? 'bg-[#E31E24] text-white'
+                      : 'bg-transparent text-foreground hover:text-[#E31E24] border-b-2 border-transparent hover:border-[#E31E24]'
+                  }`}
+                >
+                  Median Tour
                 </button>
-            )}
-              {page < totalPages &&
-            <button onClick={() => setPage(page + 1)} className="text-primary hover:underline">След. →</button>
-            }
-            </div>
-          }
+                <button
+                  onClick={() => setSelectedDistanceName('Intro Tour')}
+                  className={`px-5 py-2.5 text-sm font-bold uppercase tracking-wide transition-colors ${
+                    selectedDistanceName === 'Intro Tour'
+                      ? 'bg-[#E31E24] text-white'
+                      : 'bg-transparent text-foreground hover:text-[#E31E24] border-b-2 border-transparent hover:border-[#E31E24]'
+                  }`}
+                >
+                  Intro Tour
+                </button>
+              </div>
+
+              {/* Title */}
+              {selectedCity && (
+                <h1 className="text-center text-xl md:text-2xl lg:text-3xl text-[#003051] mb-8 tracking-tight">
+                  <span className="font-extrabold uppercase">{selectedDistanceName}</span>
+                  <span className="font-normal">, {selectedCity.location.replace(/\n/g, ' ')}, {selectedCity.date}</span>
+                </h1>
+              )}
+
+              {/* Category tabs */}
+              <div className="flex flex-wrap gap-2 justify-center mb-4">
+                {CATEGORIES.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-4 py-2 text-sm font-semibold transition-colors ${
+                      selectedCategory === cat
+                        ? 'bg-[#003051] text-white'
+                        : 'bg-transparent text-[#003051] hover:bg-[#003051]/10'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              {/* Sub-header */}
+              <div className="bg-[#003051]/5 py-3 px-4 text-center mb-6">
+                <p className="font-bold text-sm md:text-base text-[#003051] tracking-wide uppercase">
+                  Список участников
+                </p>
+              </div>
+
+              {/* Pagination top */}
+              {selectedEventId && totalPages > 1 && (
+                <div className="flex items-center gap-2 mb-4 text-sm">
+                  <span className="text-muted-foreground">Страницы:</span>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p)}
+                      className={`px-2 py-1 ${page === p ? 'font-bold text-foreground' : 'text-primary hover:underline'}`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b-2 border-[#003051]/20">
+                      <th className="text-left py-3 px-4 font-bold w-20 text-foreground">Место</th>
+                      <th className="text-left py-3 px-4 font-bold w-24 text-foreground">Номер</th>
+                      <th className="text-left py-3 px-4 font-bold text-foreground">Участник</th>
+                      <th className="text-left py-3 px-4 font-bold w-48 text-foreground">Команда/регион</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {!selectedEventId ? (
+                      <tr>
+                        <td colSpan={4} className="text-center py-16 text-muted-foreground">
+                          Данные скоро появятся
+                        </td>
+                      </tr>
+                    ) : isLoading ? (
+                      <tr>
+                        <td colSpan={isCompleted ? 5 : 4} className="text-center py-16 text-muted-foreground">
+                          Загрузка...
+                        </td>
+                      </tr>
+                    ) : currentItems.length === 0 ? (
+                      <tr>
+                        <td colSpan={isCompleted ? 5 : 4} className="text-center py-16 text-muted-foreground">
+                          Нет данных
+                        </td>
+                      </tr>
+                    ) : isCompleted ? (
+                      paginatedItems.map((result: any, idx: number) => {
+                        const profile = result.registration?.profile;
+                        return (
+                          <tr key={result.id} className={idx % 2 === 0 ? 'bg-transparent' : 'bg-muted/30'}>
+                            <td className="py-2.5 px-4">{selectedCategory === 'А 18+' ? result.place : result.category_place}</td>
+                            <td className="py-2.5 px-4">{result.registration?.bib_number ?? '—'}</td>
+                            <td className="py-2.5 px-4">{getFullName(profile)}</td>
+                            <td className="py-2.5 px-4">{formatTime(result.finish_time)}</td>
+                            <td className="py-2.5 px-4">{profile?.team_name || profile?.region || ''}</td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      paginatedItems.map((reg: any, idx: number) => {
+                        const profile = reg.profile;
+                        const rowNumber = (page - 1) * ITEMS_PER_PAGE + idx + 1;
+                        return (
+                          <tr key={reg.id} className={idx % 2 === 0 ? 'bg-transparent' : 'bg-muted/30'}>
+                            <td className="py-2.5 px-4">{rowNumber}</td>
+                            <td className="py-2.5 px-4">{reg.bib_number ?? '—'}</td>
+                            <td className="py-2.5 px-4">{getFullName(profile)}</td>
+                            <td className="py-2.5 px-4">{profile?.team_name || profile?.region || ''}</td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination bottom */}
+              {selectedEventId && totalPages > 1 && (
+                <div className="flex items-center gap-2 mt-6 text-sm justify-center">
+                  {page > 1 && (
+                    <button onClick={() => setPage(page - 1)} className="text-primary hover:underline">← Пред.</button>
+                  )}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p)}
+                      className={`px-2 py-1 ${page === p ? 'font-bold text-foreground' : 'text-primary hover:underline'}`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                  {page < totalPages && (
+                    <button onClick={() => setPage(page + 1)} className="text-primary hover:underline">След. →</button>
+                  )}
+                </div>
+              )}
+            </>
+          )}
         </div>
       </main>
 
       <FooterNew />
-    </div>);
-
+    </div>
+  );
 };
 
 export default Results;

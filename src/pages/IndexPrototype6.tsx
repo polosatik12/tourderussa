@@ -64,7 +64,7 @@ const IndexPrototype6: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <HeaderNew hideLogo />
+      <HeaderNew />
 
       {/* === TOP HERO BLOCK === */}
       <section className="relative overflow-hidden pt-[60px] lg:pt-[88px]">
@@ -86,17 +86,20 @@ const IndexPrototype6: React.FC = () => {
             <div className="absolute inset-0 bg-[hsl(201,72%,20%)] opacity-30 mix-blend-multiply pointer-events-none" />
           </div>
 
-          <div className="relative z-10 w-full px-3 md:px-6 lg:pl-[4.5%] lg:pr-[3%] py-3 lg:py-16 flex items-start pt-[8%] sm:items-center h-full">
+          <div className="relative z-10 w-full px-2 md:px-6 lg:pl-[4.5%] lg:pr-[3%] py-3 lg:py-16 flex items-start pt-[8%] sm:items-center h-full">
             <motion.div
               initial={{ opacity: 0, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               className="flex flex-col gap-0 sm:gap-2 lg:gap-4 max-w-[75%] sm:max-w-[50%] lg:max-w-lg"
               style={{ transform: 'skewX(-1deg)' }}>
-              <img src={heroLogo} alt="Tour de Russie" className="hidden sm:block h-[52px] lg:h-[72px] max-w-[280px] lg:max-w-[380px] md:max-w-[440px] object-contain sm:mb-1 lg:mb-4 border-2 border-white rounded-lg p-1 lg:p-2 bg-white" loading="eager" decoding="async" />
               <h1 className="font-extrabold italic leading-none">
-                <img src={glavaZag} alt="Новая глава" className="h-auto w-[78%] sm:h-[100px] sm:w-auto md:h-[100px] lg:h-[120px] xl:h-[150px] block -ml-3 sm:-ml-5 md:-ml-7 lg:-ml-10 object-left mb-[-18px] sm:mb-0" />
-                <span className="text-white text-[13px] sm:text-xl md:text-xl lg:text-3xl block mt-1 sm:-mt-5 md:-mt-6 lg:-mt-14 leading-[1.15] sm:leading-none whitespace-pre-line">{'российского велоспорта\nдля любителей'}</span>
+                <img src={glavaZag} alt="Новая глава" className="h-auto w-[78%] sm:h-[100px] sm:w-auto md:h-[100px] lg:h-[140px] xl:h-[170px] 2xl:h-[190px] block -ml-5 sm:-ml-5 md:-ml-7 lg:-ml-[45.9px] xl:-ml-[53.9px] 2xl:-ml-[61.9px] object-left mb-[-18px] sm:mb-0" />
+                <span className="text-white text-[13px] sm:text-xl md:text-xl lg:text-3xl xl:text-4xl 2xl:text-5xl block mt-1 sm:-mt-5 md:-mt-6 lg:-mt-14 xl:-mt-16 2xl:-mt-18 leading-[1.15] sm:leading-none">
+                  <span className="whitespace-nowrap">российского велоспорта</span>
+                  <br />
+                  для любителей
+                </span>
               </h1>
             </motion.div>
           </div>

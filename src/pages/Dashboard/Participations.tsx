@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Calendar, Trophy, ArrowRight, MapPin, Plus } from 'lucide-react';
+import { Calendar, Trophy, ArrowRight, MapPin, Plus, ChevronDown, ChevronUp } from 'lucide-react';
 import { eventsAPI, registrationsAPI } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -59,6 +59,12 @@ const Participations: React.FC = () => {
   const [selectedDistance, setSelectedDistance] = useState<string | null>(null);
   const [accepted, setAccepted] = useState(false);
 
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [selectedRegistration, setSelectedRegistration] = useState<Registration | null>(null);
+  const [vipExpanded, setVipExpanded] = useState(false);
+  const [vipSelected, setVipSelected] = useState(false);
+  const [detailsAgreed, setDetailsAgreed] = useState(false);
+
   useEffect(() => {
     const load = async () => {
       if (!user) return;
@@ -72,7 +78,12 @@ const Participations: React.FC = () => {
         const eventsWithDist: EventWithDistances[] = [];
         for (const ev of eventsRes.data.events || []) {
           const { data: distsData } = await eventsAPI.getEventDistances(ev.id);
-          eventsWithDist.push({ ...ev, distances: distsData.distances || [] });
+          // Filter out Intro Tour (25 km) for Suzdal event
+          let distances = distsData.distances || [];
+          if (ev.name.includes('Суздаль')) {
+            distances = distances.filter(d => d.name !== 'Велогонка 25 км');
+          }
+          eventsWithDist.push({ ...ev, distances });
         }
 
         setEvents(eventsWithDist);
@@ -129,6 +140,20 @@ const Participations: React.FC = () => {
 
   const isRegistered = (eventId: string) => registrations.some(r => r.event_id === eventId);
 
+  const openRegistrationDetails = (reg: Registration) => {
+    setSelectedRegistration(reg);
+    setVipExpanded(false);
+    setVipSelected(false);
+    setDetailsAgreed(false);
+    setDetailsDialogOpen(true);
+  };
+
+  const handlePurchaseFromDetails = () => {
+    if (!selectedRegistration) return;
+    toast.info('Покупка дополнительных услуг временно недоступна');
+    setDetailsDialogOpen(false);
+  };
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -166,7 +191,11 @@ const Participations: React.FC = () => {
             ) : (
               <div className="space-y-3">
                 {upcomingRegs.map(r => (
-                  <Card key={r.id}>
+                  <Card
+                    key={r.id}
+                    className="cursor-pointer hover:shadow-md transition-shadow"
+                    onClick={() => openRegistrationDetails(r)}
+                  >
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div>
@@ -331,6 +360,129 @@ const Participations: React.FC = () => {
               Добавить в корзину
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Registration Details Dialog */}
+      <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-bold text-xl uppercase text-primary">
+              Детали регистрации
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedRegistration && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold text-foreground mb-1">
+                  {getDisplayDistanceName(selectedRegistration.event_distances?.name || '')} — {formatDistance(selectedRegistration.event_distances?.distance_km || 0)} км
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {selectedRegistration.events?.location} · {selectedRegistration.events?.date ? new Date(selectedRegistration.events.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
+                </p>
+                {selectedRegistration.bib_number && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Стартовый номер: <span className="font-medium text-foreground">{selectedRegistration.bib_number}</span>
+                  </p>
+                )}
+              </div>
+
+              <div className="border-t border-border pt-4">
+                <p className="text-sm font-medium text-foreground mb-2">Базовая регистрация:</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Стоимость участия</span>
+                  <span className="font-semibold text-foreground">6 000 ₽</span>
+                </div>
+              </div>
+
+              {/* Insurance Button */}
+              <div className="border-t border-border pt-4">
+                <a
+                  href="https://www.sogaz.ru/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-center py-3 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold uppercase tracking-wider rounded-sm transition-colors"
+                >
+                  Купить страховку
+                </a>
+              </div>
+
+              {/* VIP Section */}
+              <div className="border border-border rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setVipExpanded(!vipExpanded)}
+                  className="w-full flex items-center justify-between p-4 bg-muted/30 hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <Checkbox
+                      checked={vipSelected}
+                      onCheckedChange={(checked) => setVipSelected(checked === true)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <span className="font-bold text-foreground">Выбрать VIP Пакет</span>
+                  </div>
+                  {vipExpanded ? (
+                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                  )}
+                </button>
+
+                {vipExpanded && (
+                  <div className="p-4 bg-background space-y-3">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-medium text-foreground">VIP Пакет включает:</p>
+                      <span className="font-bold text-lg text-primary">5 000 ₽</span>
+                    </div>
+                    <ul className="space-y-2 text-sm text-foreground">
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">✓</span>
+                        <span>Завтрак в VIP шатре</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">✓</span>
+                        <span>VIP парковка</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5">✓</span>
+                        <span>Регистрация в VIP стойке</span>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between border-t border-border pt-4">
+                <span className="text-sm text-muted-foreground">Итого к оплате</span>
+                <span className="font-extrabold text-2xl text-primary">
+                  {vipSelected ? '11 000 ₽' : '6 000 ₽'}
+                </span>
+              </div>
+
+              <div className="flex items-start gap-3 border-t border-border pt-4">
+                <Checkbox
+                  id="agree-details"
+                  checked={detailsAgreed}
+                  onCheckedChange={(checked) => setDetailsAgreed(checked === true)}
+                />
+                <label
+                  htmlFor="agree-details"
+                  className="text-sm text-foreground leading-snug cursor-pointer"
+                >
+                  С условиями ознакомлен и подтверждаю
+                </label>
+              </div>
+
+              <Button
+                onClick={handlePurchaseFromDetails}
+                disabled={!detailsAgreed}
+                className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider"
+              >
+                Перейти к покупке
+              </Button>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </DashboardLayout>

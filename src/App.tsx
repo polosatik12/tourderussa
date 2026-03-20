@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from "react";
-import { suzdalRegistration, igoraRegistration, pushkinRegistration } from "./data/eventRegistrationData";
+import { suzdalRegistration, igoraRegistration, pushkinRegistration, moscowRegistration } from "./data/eventRegistrationData";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -41,6 +41,7 @@ const NotFound = lazyRetry(() => import("./pages/NotFound"));
 const Suzdal = lazyRetry(() => import("./pages/Events/Suzdal"));
 const Igora = lazyRetry(() => import("./pages/Events/Igora"));
 const Pushkin = lazyRetry(() => import("./pages/Events/Pushkin"));
+const Moscow = lazyRetry(() => import("./pages/Events/Moscow"));
 const EventRegistration = lazyRetry(() => import("./pages/Events/EventRegistration"));
 const NewsPage = lazyRetry(() => import("./pages/News"));
 const NewsArticle = lazyRetry(() => import("./pages/News/NewsArticle"));
@@ -79,6 +80,7 @@ const App = () => (
             <Route path="/events/suzdal" element={<Suzdal />} />
             <Route path="/events/igora" element={<Igora />} />
             <Route path="/events/pushkin" element={<Pushkin />} />
+            <Route path="/events/moscow" element={<Moscow />} />
             <Route path="/results" element={<Results />} />
             <Route path="/chucha-world" element={<ChuchaWorld />} />
             <Route path="/media" element={<MediaPage />} />
@@ -87,6 +89,7 @@ const App = () => (
             <Route path="/events/suzdal/registration" element={<EventRegistration {...suzdalRegistration} />} />
             <Route path="/events/igora/registration" element={<EventRegistration {...igoraRegistration} />} />
             <Route path="/events/pushkin/registration" element={<EventRegistration {...pushkinRegistration} />} />
+            <Route path="/events/moscow/registration" element={<EventRegistration {...moscowRegistration} />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/dashboard/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

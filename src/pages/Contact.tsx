@@ -153,7 +153,6 @@ const Contact: React.FC = () => {
 
 
               <div className="text-[14px] space-y-1">
-                <p className="text-foreground"><span className="text-foreground">Тел.:</span> <a href="tel:+79166528272" className="hover:underline">+7 (916) 652-82-72</a>, <a href="tel:+79043356079" className="hover:underline">+7 (904) 335-60-79</a></p>
                 <p className="text-foreground"><span className="text-foreground">Email:</span> <a href="mailto:mail@tourderussie.ru" className="hover:underline">mail@tourderussie.ru</a></p>
               </div>
             </div>
