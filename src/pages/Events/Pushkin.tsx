@@ -26,6 +26,15 @@ const hotels = [
   amenities: ['Wi-Fi', 'Ресторан', 'Вид на собор', 'Pet-friendly'],
   bookingUrl: 'https://www.angleterrehotel.ru',
   image: '/images/angleterre-hotel.jpg'
+},
+{
+  name: 'Hilton Saint Petersburg ExpoForum',
+  address: 'Санкт-Петербург, Петербургское шоссе, д. 62/1',
+  description: 'Современный отель на территории выставочного комплекса ExpoForum, в 3 км от аэропорта Пулково. Рестораны, SPA-салон, бассейн.',
+  details: 'Отель расположен на территории выставочного комплекса ExpoForum. Предлагает высокий уровень сервиса с номерами различных категорий, включая семейные номера. Проживание включает 1 час ежедневного доступа к гидро-термальному комплексу. Бесплатный трансфер между аэропортом, отелем и станцией метро «Московская». Бесплатная парковка для гостей.',
+  amenities: ['Wi-Fi', 'Ресторан', 'SPA', 'Бассейн', 'Трансфер', 'Pet-friendly'],
+  bookingUrl: 'https://hiltonexpoforum.ru',
+  image: '/images/hilton-expoforum-hotel.jpg'
 }];
 
 const routes = [

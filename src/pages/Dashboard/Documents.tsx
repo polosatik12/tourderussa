@@ -16,11 +16,18 @@ interface Consent {
 
 const consentTypes = [
   {
+    type: 'personal_data_consent',
+    title: 'Согласие на обработку персональных данных',
+    description: 'Согласие на обработку и хранение ваших персональных данных',
+    downloadUrl: '/documents/personal-data-consent.pdf',
+    downloadName: 'Согласие_на_обработку_персональных_данных.pdf',
+  },
+  {
     type: 'privacy_policy',
     title: 'Политика конфиденциальности',
-    description: 'Согласие на обработку персональных данных',
+    description: 'Ознакомление с политикой обработки персональных данных',
     downloadUrl: '/documents/privacy-policy.pdf',
-    downloadName: 'Согласие_на_обработку_персональных_данных.pdf',
+    downloadName: 'Политика_конфиденциальности.pdf',
   },
   {
     type: 'waiver',

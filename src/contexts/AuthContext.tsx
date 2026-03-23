@@ -51,8 +51,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const refreshProfile = async () => {
-    if (user) {
-      const profileData = await fetchProfile();
+    const profileData = await fetchProfile();
+    if (profileData) {
       setProfile(profileData);
     }
   };
@@ -109,6 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       setUser(data.user);
 
+      // Загружаем профиль после установки пользователя
       const profileData = await fetchProfile();
       setProfile(profileData);
 

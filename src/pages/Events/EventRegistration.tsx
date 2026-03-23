@@ -192,7 +192,7 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
                   <div className="p-4 bg-background space-y-3">
                     <div className="flex items-center justify-between mb-3">
                       <p className="text-sm font-medium text-foreground">VIP Пакет включает:</p>
-                      <span className="font-bold text-lg text-primary">5 000 ₽</span>
+                      <span className="font-bold text-lg text-primary">7 000 ₽</span>
                     </div>
                     <ul className="space-y-2 text-sm text-foreground">
                       <li className="flex items-start gap-2">
